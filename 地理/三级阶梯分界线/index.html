@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>中国地势三级阶梯分界线 · 界山与省界对照</title>
+<style>
+  :root {
+    --page:        #f9f9f7;
+    --surface-1:   #fcfcfb;
+    --text-primary:#0b0b0b;
+    --text-secondary:#52514e;
+    --text-muted:  #898781;
+    --hairline:    rgba(11,11,11,0.10);
+    --gridline:    #e1e0d9;
+    --series-1:    #2a78d6;  /* 第一、二阶梯分界线 */
+    --series-2:    #eb6834;  /* 第二、三阶梯分界线 */
+    --map-area:    #f1f0ec;
+    --map-border:  #c3c2b7;
+    --tint-1:      rgba(42,120,214,0.18);
+    --tint-2:      rgba(235,104,52,0.18);
+  }
+  :root[data-theme="dark"] {
+    --page:        #0d0d0d;
+    --surface-1:   #1a1a19;
+    --text-primary:#ffffff;
+    --text-secondary:#c3c2b7;
+    --text-muted:  #898781;
+    --hairline:    rgba(255,255,255,0.10);
+    --gridline:    #2c2c2a;
+    --series-1:    #3987e5;
+    --series-2:    #d95926;
+    --map-area:    #232322;
+    --map-border:  #383835;
+    --tint-1:      rgba(57,135,229,0.26);
+    --tint-2:      rgba(217,89,38,0.26);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 24px;
+    background: var(--page); color: var(--text-primary);
+    font-family: system-ui, -apple-system, "PingFang SC", "Segoe UI", sans-serif;
+    font-size: 14px; line-height: 1.6;
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; }
+  header { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 4px; }
+  h1 { font-size: 20px; margin: 0 0 2px; letter-spacing: .2px; }
+  .sub { color: var(--text-secondary); font-size: 13px; }
+  button {
+    font: inherit; font-size: 12px; color: var(--text-secondary);
+    background: var(--surface-1); border: 1px solid var(--hairline);
+    border-radius: 8px; padding: 6px 12px; cursor: pointer;
+  }
+  button:hover { color: var(--text-primary); }
+  .card {
+    background: var(--surface-1); border: 1px solid var(--hairline);
+    border-radius: 12px; margin-top: 16px; overflow: hidden;
+  }
+  #map { width: 100%; height: 620px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 20px; padding: 14px 18px 2px; }
+  .legend span { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-secondary); }
+  .swatch { width: 22px; height: 3px; border-radius: 2px; display: inline-block; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
+  @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } #map { height: 460px; } }
+  .panel { padding: 16px 18px 18px; }
+  .panel h2 { font-size: 14px; margin: 0 0 2px; display: flex; align-items: center; gap: 8px; }
+  .panel .line { font-size: 12px; color: var(--text-muted); margin-bottom: 10px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; font-weight: 600; color: var(--text-secondary); font-size: 12px;
+       border-bottom: 1px solid var(--gridline); padding: 6px 8px 6px 0; }
+  td { padding: 7px 8px 7px 0; border-bottom: 1px solid var(--gridline); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  td.mt { font-weight: 600; white-space: nowrap; }
+  .note { font-size: 12px; color: var(--text-muted); margin-top: 10px; }
+  .flag { display:inline-block; font-size:11px; padding:1px 6px; border-radius:5px;
+          border:1px solid var(--hairline); color: var(--text-secondary); margin-left:6px; }
+  footer { color: var(--text-muted); font-size: 12px; margin-top: 14px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>中国地势三级阶梯分界线</h1>
+      <div class="sub">两条界线上的山脉，各自卡在哪两个省（区、市）的交界上 · 可拖动、滚轮缩放</div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <a href="../../index.html" style="font-size:12px;color:var(--text-secondary);text-decoration:none;background:var(--surface-1);border:1px solid var(--hairline);border-radius:8px;padding:6px 12px">← 返回索引</a>
+      <button id="themeBtn">切换深色</button>
+    </div>
+  </header>
+
+  <div class="card">
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--series-1)"></i>第一、二阶梯分界线：昆仑山—阿尔金山—祁连山—横断山</span>
+      <span><i class="swatch" style="background:var(--series-2)"></i>第二、三阶梯分界线：大兴安岭—太行山—巫山—雪峰山</span>
+    </div>
+    <div id="map"></div>
+  </div>
+
+  <div class="grid">
+    <div class="card panel">
+      <h2><i class="swatch" style="background:var(--series-1)"></i>第一、二阶梯分界线</h2>
+      <div class="line">青藏高原边缘 → 4000m 以上 降到 1000–2000m</div>
+      <table>
+        <thead><tr><th>界山</th><th>交界省区</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td class="mt">昆仑山脉</td><td>新疆 ↔ 西藏</td><td>塔里木盆地南缘，东段进入青海</td></tr>
+          <tr><td class="mt">阿尔金山</td><td>新疆 ↔ 青海</td><td>昆仑与祁连之间的接续段，教材常并入昆仑山</td></tr>
+          <tr><td class="mt">祁连山脉</td><td>青海 ↔ 甘肃</td><td>河西走廊南侧</td></tr>
+          <tr><td class="mt">横断山脉</td><td>西藏 ↔ 四川 ↔ 云南</td><td>川滇藏三省区交界带，南北纵列</td></tr>
+        </tbody>
+      </table>
+      <div class="note">教材简写口径为「昆仑山—祁连山—横断山」，阿尔金山含在其中。</div>
+    </div>
+
+    <div class="card panel">
+      <h2><i class="swatch" style="background:var(--series-2)"></i>第二、三阶梯分界线</h2>
+      <div class="line">高原山地 → 1000–2000m 降到 500m 以下的平原丘陵</div>
+      <table>
+        <thead><tr><th>界山</th><th>交界省区</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td class="mt">大兴安岭</td><td>内蒙古 ↔ 黑龙江</td><td>山体主脊在内蒙古，东坡入黑龙江</td></tr>
+          <tr><td class="mt">太行山脉</td><td>山西 ↔ 河北</td><td>南段延伸到山西 ↔ 河南</td></tr>
+          <tr><td class="mt">巫山</td><td>重庆 ↔ 湖北</td><td>长江三峡穿越处</td></tr>
+          <tr><td class="mt">雪峰山</td><td>湖南省内<span class="flag">非省界</span></td><td>整体在湖南西部，不构成省界，是这条线上唯一的例外</td></tr>
+        </tbody>
+      </table>
+      <div class="note">四条界山里只有雪峰山不是省界山，其余三条都正好压在省界上。</div>
+    </div>
+  </div>
+
+  <footer>界线走向为示意画法（按各山脉实际经纬位置连缀），底图为省级行政边界；用于理解位置关系，非精确制图。</footer>
+</div>
+
+<script src="../../vendor/echarts.min.js"></script>
+<script src="../../vendor/china-geo.js"></script>
+<script>
+echarts.registerMap('china', window.CHINA_GEOJSON);
+
+// —— 界线走向（经度, 纬度）——
+const LINE_12 = [
+  [75.3,37.6],[78.5,36.4],[82.0,36.2],[85.5,36.4],[87.5,37.4],[90.5,38.3],
+  [93.5,39.0],[96.0,39.2],[99.5,38.3],[102.0,37.0],[103.0,36.2],
+  [103.3,34.0],[102.8,32.2],[101.8,30.5],[100.2,28.3],[99.3,26.8],[98.8,25.3]
+];
+const LINE_23 = [
+  [122.8,53.2],[124.0,50.5],[122.5,48.5],[120.5,46.0],[119.3,43.8],[118.5,42.2],
+  [116.5,41.0],[114.5,40.2],[113.8,38.5],[113.4,36.8],[113.2,35.4],
+  [111.5,33.0],[110.4,31.6],[109.6,30.2],[110.0,29.0],[110.4,27.9],[110.6,26.9],[110.3,26.0]
+];
+
+const MT_12 = [
+  {name:'昆仑山脉', coord:[82.0,36.2],  prov:'新疆 ↔ 西藏',        desc:'塔里木盆地南缘，东段入青海', pos:'top'},
+  {name:'阿尔金山', coord:[90.8,38.4],  prov:'新疆 ↔ 青海',        desc:'昆仑与祁连的接续段',       pos:'top'},
+  {name:'祁连山脉', coord:[99.5,38.3],  prov:'青海 ↔ 甘肃',        desc:'河西走廊南侧',            pos:'bottom'},
+  {name:'横断山脉', coord:[100.6,28.6], prov:'西藏 ↔ 四川 ↔ 云南', desc:'川滇藏交界，南北纵列',     pos:'left'}
+];
+const MT_23 = [
+  {name:'大兴安岭', coord:[121.4,47.4], prov:'内蒙古 ↔ 黑龙江', desc:'主脊在内蒙古，东坡入黑龙江', pos:'right'},
+  {name:'太行山脉', coord:[113.6,37.6], prov:'山西 ↔ 河北',     desc:'南段延伸到山西 ↔ 河南',     pos:'right'},
+  {name:'巫山',    coord:[110.0,30.9], prov:'重庆 ↔ 湖北',     desc:'长江三峡穿越处',           pos:'left'},
+  {name:'雪峰山',  coord:[110.5,27.4], prov:'湖南省内（非省界）', desc:'整体在湖南西部',          pos:'right'}
+];
+
+const PROV_12 = ['新疆维吾尔自治区','西藏自治区','青海省','甘肃省','四川省','云南省'];
+const PROV_23 = ['内蒙古自治区','黑龙江省','山西省','河北省','重庆市','湖北省','湖南省'];
+
+const STEPS = [
+  {name:'第一阶梯', coord:[86.5,32.5], note:'青藏高原 · 4000m 以上'},
+  {name:'第二阶梯', coord:[107.0,41.8], note:'高原盆地 · 1000–2000m'},
+  {name:'第三阶梯', coord:[119.4,33.2], note:'平原丘陵 · 500m 以下'}
+];
+
+function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+
+function buildOption(){
+  const c1 = css('--series-1'), c2 = css('--series-2');
+  const ink = css('--text-primary'), ink2 = css('--text-secondary'), muted = css('--text-muted');
+  const surf = css('--surface-1');
+
+  const regions = []
+    .concat(PROV_12.map(n => ({name:n, itemStyle:{areaColor:css('--tint-1')}})))
+    .concat(PROV_23.map(n => ({name:n, itemStyle:{areaColor:css('--tint-2')}})));
+
+  const mtSeries = (data, color, z) => ({
+    type:'scatter', coordinateSystem:'geo', z:z,
+    symbolSize: 11,
+    itemStyle:{ color:color, borderColor:surf, borderWidth:2 },
+    label:{
+      show:true, formatter:'{b}', color:ink, fontSize:12, fontWeight:600,
+      backgroundColor:surf, borderColor:color, borderWidth:1, borderRadius:5,
+      padding:[3,6], distance:8
+    },
+    emphasis:{ scale:1.4, label:{ color:ink } },
+    tooltip:{
+      formatter: p => `<b>${p.data.name}</b><br/>交界：${p.data.prov}<br/><span style="color:${muted}">${p.data.desc}</span>`
+    },
+    data: data.map(m => ({
+      name:m.name, value:m.coord, prov:m.prov, desc:m.desc,
+      label:{ position:m.pos }
+    }))
+  });
+
+  return {
+    backgroundColor: 'transparent',
+    tooltip:{
+      trigger:'item', confine:true,
+      backgroundColor: surf, borderColor: css('--hairline'), borderWidth:1,
+      textStyle:{ color: ink, fontSize:12 },
+      extraCssText:'box-shadow:0 4px 16px rgba(0,0,0,.12);border-radius:8px;'
+    },
+    geo:{
+      map:'china', roam:true, zoom:1.55, center:[106.5,37.0],
+      itemStyle:{ areaColor: css('--map-area'), borderColor: css('--map-border'), borderWidth:0.8 },
+      emphasis:{ disabled:true },
+      regions: regions,
+      silent:true, z:1
+    },
+    series:[
+      { // 省界高亮层（可 hover 出省名）
+        type:'map', map:'china', roam:false, geoIndex:0, z:1,
+        tooltip:{ formatter: p => {
+          if (PROV_12.includes(p.name)) return `<b>${p.name}</b><br/>第一、二阶梯界山所经`;
+          if (PROV_23.includes(p.name)) return `<b>${p.name}</b><br/>第二、三阶梯界山所经`;
+          return `<b>${p.name}</b>`;
+        }},
+        data: []
+      },
+      { type:'lines', coordinateSystem:'geo', polyline:true, z:5, silent:true,
+        lineStyle:{ color:c1, width:3.2, opacity:0.95, cap:'round', join:'round' },
+        data:[{ coords: LINE_12 }] },
+      { type:'lines', coordinateSystem:'geo', polyline:true, z:5, silent:true,
+        lineStyle:{ color:c2, width:3.2, opacity:0.95, cap:'round', join:'round' },
+        data:[{ coords: LINE_23 }] },
+      mtSeries(MT_12, c1, 8),
+      mtSeries(MT_23, c2, 8),
+      { type:'scatter', coordinateSystem:'geo', symbolSize:0, silent:true, z:3,
+        label:{ show:true, color:muted, fontSize:13, fontWeight:600, opacity:0.85,
+                formatter: p => p.data.name },
+        data: STEPS.map(s => ({ name:s.name, value:s.coord })) }
+    ]
+  };
+}
+
+const chart = echarts.init(document.getElementById('map'));
+chart.setOption(buildOption());
+window.addEventListener('resize', () => chart.resize());
+
+const btn = document.getElementById('themeBtn');
+btn.addEventListener('click', () => {
+  const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+  document.documentElement.setAttribute('data-theme', dark ? 'light' : 'dark');
+  btn.textContent = dark ? '切换深色' : '切换浅色';
+  chart.setOption(buildOption(), true);
+});
+</script>
+</body>
+</html>
