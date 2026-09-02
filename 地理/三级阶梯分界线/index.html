@@ -76,6 +76,38 @@
   .flag { display:inline-block; font-size:11px; padding:1px 6px; border-radius:5px;
           border:1px solid var(--hairline); color: var(--text-secondary); margin-left:6px; }
   footer { color: var(--text-muted); font-size: 12px; margin-top: 14px; }
+
+  /* 地图工具条 */
+  .bar { display:flex; align-items:center; justify-content:space-between; gap:12px;
+         padding: 8px 18px 10px; border-bottom:1px solid var(--gridline); }
+  .bar .hint { font-size:12px; color:var(--text-muted); }
+  .zoom { display:flex; gap:6px; flex:0 0 auto; }
+  .zoom button { padding:4px 10px; min-width:32px; line-height:1.3; }
+
+  /* 考点面板 */
+  .kp .head { display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:2px; }
+  .kp .head h2 { font-size:16px; margin:0; }
+  .kp .head .prov { font-size:12px; color:var(--text-secondary);
+                    border:1px solid var(--hairline); border-radius:6px; padding:1px 7px; }
+  .kp .lead { font-size:12px; color:var(--text-muted); margin-bottom:12px; }
+  .kp .groups { display:grid; grid-template-columns:1fr 1fr; gap:14px 24px; }
+  .kp .g h3 { font-size:12px; font-weight:600; color:var(--accent, var(--text-secondary));
+              margin:0 0 5px; letter-spacing:.3px; }
+  .kp ul { margin:0; padding-left:17px; }
+  .kp li { margin-bottom:5px; font-size:13px; }
+  .kp li b { font-weight:600; }
+  .kp .warn h3 { color:#d03b3b; }
+  tr.clk { cursor:pointer; }
+  tr.clk:hover td { background:rgba(42,120,214,0.06); }
+  :root[data-theme="dark"] tr.clk:hover td { background:rgba(57,135,229,0.12); }
+  tr.clk.on td { background:rgba(42,120,214,0.10); }
+  :root[data-theme="dark"] tr.clk.on td { background:rgba(57,135,229,0.18); }
+
+  @media (max-width: 860px) { .kp .groups { grid-template-columns:1fr; } }
+  @media (max-width: 640px) {
+    .bar { flex-direction:column; align-items:flex-start; gap:8px; padding:10px 14px; }
+    .kp .head h2 { font-size:15px; }
+  }
   @media (max-width: 640px) {
     body { padding: 14px 12px 28px; }
     header { flex-direction: column; align-items: stretch; }
@@ -98,7 +130,7 @@
   <header>
     <div>
       <h1>中国地势三级阶梯分界线</h1>
-      <div class="sub">两条界线上的山脉，各自卡在哪两个省（区、市）的交界上 · 可拖动、滚轮缩放</div>
+      <div class="sub">点击山脉或阶梯查看国考常识考点 · 地图可拖动，滚轮或按钮缩放</div>
     </div>
     <div style="display:flex;gap:8px;align-items:center">
       <a href="../../index.html" style="font-size:12px;color:var(--text-secondary);text-decoration:none;background:var(--surface-1);border:1px solid var(--hairline);border-radius:8px;padding:6px 12px">← 返回索引</a>
@@ -111,8 +143,18 @@
       <span><i class="swatch" style="background:var(--series-1)"></i>第一、二阶梯分界线：昆仑山—阿尔金山—祁连山—横断山</span>
       <span><i class="swatch" style="background:var(--series-2)"></i>第二、三阶梯分界线：大兴安岭—太行山—巫山—雪峰山</span>
     </div>
+    <div class="bar">
+      <span class="hint">点击地图上的山脉或阶梯，看该处的国考常识考点</span>
+      <span class="zoom">
+        <button id="zoomOut" title="缩小">−</button>
+        <button id="zoomIn" title="放大">＋</button>
+        <button id="zoomReset">复位</button>
+      </span>
+    </div>
     <div id="map"></div>
   </div>
+
+  <div class="card panel kp" id="kp"></div>
 
   <div class="grid">
     <div class="card panel">
@@ -121,10 +163,10 @@
       <table>
         <thead><tr><th>界山</th><th>交界省区</th><th>说明</th></tr></thead>
         <tbody>
-          <tr><td class="mt">昆仑山脉</td><td>新疆 ↔ 西藏</td><td>塔里木盆地南缘，东段进入青海</td></tr>
-          <tr><td class="mt">阿尔金山</td><td>新疆 ↔ 青海</td><td>昆仑与祁连之间的接续段，教材常并入昆仑山</td></tr>
-          <tr><td class="mt">祁连山脉</td><td>青海 ↔ 甘肃</td><td>河西走廊南侧</td></tr>
-          <tr><td class="mt">横断山脉</td><td>西藏 ↔ 四川 ↔ 云南</td><td>川滇藏三省区交界带，南北纵列</td></tr>
+          <tr class="clk" data-k="昆仑山脉"><td class="mt">昆仑山脉</td><td>新疆 ↔ 西藏</td><td>塔里木盆地南缘，东段进入青海</td></tr>
+          <tr class="clk" data-k="阿尔金山"><td class="mt">阿尔金山</td><td>新疆 ↔ 青海</td><td>昆仑与祁连之间的接续段，教材常并入昆仑山</td></tr>
+          <tr class="clk" data-k="祁连山脉"><td class="mt">祁连山脉</td><td>青海 ↔ 甘肃</td><td>河西走廊南侧</td></tr>
+          <tr class="clk" data-k="横断山脉"><td class="mt">横断山脉</td><td>西藏 ↔ 四川 ↔ 云南</td><td>川滇藏三省区交界带，南北纵列</td></tr>
         </tbody>
       </table>
       <div class="note">教材简写口径为「昆仑山—祁连山—横断山」，阿尔金山含在其中。</div>
@@ -136,21 +178,22 @@
       <table>
         <thead><tr><th>界山</th><th>交界省区</th><th>说明</th></tr></thead>
         <tbody>
-          <tr><td class="mt">大兴安岭</td><td>内蒙古 ↔ 黑龙江</td><td>山体主脊在内蒙古，东坡入黑龙江</td></tr>
-          <tr><td class="mt">太行山脉</td><td>山西 ↔ 河北</td><td>南段延伸到山西 ↔ 河南</td></tr>
-          <tr><td class="mt">巫山</td><td>重庆 ↔ 湖北</td><td>长江三峡穿越处</td></tr>
-          <tr><td class="mt">雪峰山</td><td>湖南省内<span class="flag">非省界</span></td><td>整体在湖南西部，不构成省界，是这条线上唯一的例外</td></tr>
+          <tr class="clk" data-k="大兴安岭"><td class="mt">大兴安岭</td><td>内蒙古 ↔ 黑龙江</td><td>山体主脊在内蒙古，东坡入黑龙江</td></tr>
+          <tr class="clk" data-k="太行山脉"><td class="mt">太行山脉</td><td>山西 ↔ 河北</td><td>南段延伸到山西 ↔ 河南</td></tr>
+          <tr class="clk" data-k="巫山"><td class="mt">巫山</td><td>重庆 ↔ 湖北</td><td>长江三峡穿越处</td></tr>
+          <tr class="clk" data-k="雪峰山"><td class="mt">雪峰山</td><td>湖南省内<span class="flag">非省界</span></td><td>整体在湖南西部，不构成省界，是这条线上唯一的例外</td></tr>
         </tbody>
       </table>
       <div class="note">四条界山里只有雪峰山不是省界山，其余三条都正好压在省界上。</div>
     </div>
   </div>
 
-  <footer>界线走向为示意画法（按各山脉实际经纬位置连缀），底图为省级行政边界；用于理解位置关系，非精确制图。</footer>
+  <footer>界线走向为示意画法（按各山脉实际经纬位置连缀），底图为省级行政边界，用于理解位置关系，非精确制图。考点按国考行测常识判断的常见命题方向整理，以最新考纲与真题为准。</footer>
 </div>
 
 <script src="../../vendor/echarts.min.js"></script>
 <script src="../../vendor/china-geo.js"></script>
+<script src="kp-data.js"></script>
 <script>
 echarts.registerMap('china', window.CHINA_GEOJSON);
 
@@ -211,7 +254,7 @@ function buildOption(){
     },
     emphasis:{ scale:1.4, label:{ color:ink } },
     tooltip:{
-      formatter: p => `<b>${p.data.name}</b><br/>交界：${p.data.prov}<br/><span style="color:${muted}">${p.data.desc}</span>`
+      formatter: p => `<b>${p.data.name}</b><br/>交界：${p.data.prov}<br/><span style="color:${muted}">点击查看考点</span>`
     },
     data: data.map(m => ({
       name:m.name, value:m.coord, prov:m.prov, desc:m.desc,
@@ -229,6 +272,7 @@ function buildOption(){
     },
     geo:{
       map:'china', roam:true, zoom: narrow ? 1.2 : 1.55, center: narrow ? [104.5,36.5] : [106.5,37.0],
+      scaleLimit:{ min:0.9, max:6 },
       itemStyle:{ areaColor: css('--map-area'), borderColor: css('--map-border'), borderWidth:0.8 },
       emphasis:{ disabled:true },
       regions: regions,
@@ -252,9 +296,12 @@ function buildOption(){
         data:[{ coords: LINE_23 }] },
       mtSeries(MT_12, c1, 8),
       mtSeries(MT_23, c2, 8),
-      { type:'scatter', coordinateSystem:'geo', symbolSize:0, silent:true, z:3,
-        label:{ show:true, color:muted, fontSize: narrow ? 11 : 13, fontWeight:600, opacity:0.85,
-                formatter: p => p.data.name },
+      { type:'scatter', coordinateSystem:'geo', z:3,
+        symbol:'rect', symbolSize: narrow ? [58,18] : [66,20],
+        itemStyle:{ color:'transparent' },
+        label:{ show:true, position:'inside', color:muted, fontSize: narrow ? 11 : 13,
+                fontWeight:600, opacity:0.85, formatter: p => p.data.name },
+        tooltip:{ formatter: p => `<b>${p.data.name}</b><br/><span style="color:${muted}">点击查看考点</span>` },
         data: STEPS.map(s => ({ name:s.name, value:s.coord })) }
     ]
   };
@@ -276,6 +323,65 @@ btn.addEventListener('click', () => {
   btn.textContent = dark ? '切换深色' : '切换浅色';
   chart.setOption(buildOption(), true);
 });
+
+/* ---------- 考点面板 ---------- */
+const kpEl = document.getElementById('kp');
+
+function showKP(key, scroll){
+  const d = window.KP[key];
+  if (!d) return;
+  const back = key === '总述' ? '' :
+    ' <button id="kpBack" style="margin-left:auto">← 总述</button>';
+  kpEl.innerHTML =
+    `<div class="head"><h2>${d.title}</h2><span class="prov">${d.prov}</span>${back}</div>` +
+    `<div class="lead">${d.lead}</div>` +
+    `<div class="groups">` +
+    d.groups.map(g =>
+      `<div class="g${g.warn ? ' warn' : ''}"><h3>${g.h}</h3><ul>` +
+      g.items.map(i => `<li>${i}</li>`).join('') + `</ul></div>`
+    ).join('') +
+    `</div>`;
+
+  document.querySelectorAll('tr.clk').forEach(tr =>
+    tr.classList.toggle('on', tr.dataset.k === key));
+
+  const b = document.getElementById('kpBack');
+  if (b) b.addEventListener('click', () => showKP('总述', true));
+  if (scroll) kpEl.scrollIntoView({ behavior:'smooth', block:'nearest' });
+}
+showKP('总述');
+
+chart.on('click', p => {
+  const n = p.data && p.data.name;
+  if (n && window.KP[n]) showKP(n, true);
+});
+document.querySelectorAll('tr.clk').forEach(tr =>
+  tr.addEventListener('click', () => showKP(tr.dataset.k, true)));
+
+/* ---------- 缩放：阻尼滚轮 + 按钮 ---------- */
+const mapEl = document.getElementById('map');
+
+function zoomBy(f, ox, oy){
+  const r = mapEl.getBoundingClientRect();
+  chart.dispatchAction({
+    type:'geoRoam', componentType:'geo', geoIndex:0,
+    zoom:f, originX: ox == null ? r.width/2 : ox, originY: oy == null ? r.height/2 : oy
+  });
+}
+
+// 拦掉 echarts 自带的滚轮缩放，换成步长小得多的版本
+mapEl.addEventListener('wheel', e => {
+  e.stopPropagation();
+  e.preventDefault();
+  const d = e.deltaMode === 1 ? e.deltaY * 16 : (e.deltaMode === 2 ? e.deltaY * 400 : e.deltaY);
+  const f = Math.min(1.08, Math.max(0.93, Math.pow(1.0008, -d)));
+  const r = mapEl.getBoundingClientRect();
+  zoomBy(f, e.clientX - r.left, e.clientY - r.top);
+}, { capture:true, passive:false });
+
+document.getElementById('zoomIn').addEventListener('click', () => zoomBy(1.25));
+document.getElementById('zoomOut').addEventListener('click', () => zoomBy(0.8));
+document.getElementById('zoomReset').addEventListener('click', () => chart.setOption(buildOption(), true));
 </script>
 </body>
 </html>
