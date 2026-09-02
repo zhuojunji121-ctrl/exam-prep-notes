@@ -1,6 +1,7 @@
 # 备考资料
 
-复习材料归档。入口是 `index.html`，双击即可，不需要联网、不需要起服务。
+复习材料归档。本地入口是 `index.html`，双击即可，不需要联网。
+线上（手机可看）：https://zhuojunji121-ctrl.github.io/exam-prep-notes/
 
 ## 目录约定
 
@@ -22,6 +23,18 @@
 ```
 
 学科分组、计数、排序都是自动的，不用改别的地方。
+
+3. 发布到手机可见（GitHub Pages，仓库 `zhuojunji121-ctrl/exam-prep-notes`）：
+
+```bash
+cd ~/Desktop/备考资料 && git add -A && git commit -m "说明" && git push
+```
+
+推送后约 30 秒~1 分钟生效。仓库是公开的，但全站带 `noindex` + `robots.txt`，搜索引擎不收录。新页面记得也加 `<meta name="robots" content="noindex, nofollow">`。
+
+## 手机适配
+
+新页面统一带 `@media (max-width: 640px)` 分支：body padding 收到 12px、header 竖排、表格 `table-layout: fixed` + `word-break: break-word`（否则会横向溢出）。改完用 390px 宽的 iframe 验证 `scrollWidth === clientWidth`。
 
 ## 配色
 
