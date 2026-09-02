@@ -76,6 +76,21 @@
   .flag { display:inline-block; font-size:11px; padding:1px 6px; border-radius:5px;
           border:1px solid var(--hairline); color: var(--text-secondary); margin-left:6px; }
   footer { color: var(--text-muted); font-size: 12px; margin-top: 14px; }
+  @media (max-width: 640px) {
+    body { padding: 14px 12px 28px; }
+    header { flex-direction: column; align-items: stretch; }
+    h1 { font-size: 18px; }
+    #map { height: 400px; }
+    .legend { flex-direction: column; gap: 8px; padding: 12px 14px 0; }
+    .legend span { align-items: flex-start; line-height: 1.45; }
+    .legend .swatch { margin-top: 8px; flex: 0 0 auto; }
+    .panel { padding: 14px; }
+    table { font-size: 12px; table-layout: fixed; }
+    th, td { padding-right: 6px; word-break: break-word; }
+    th:nth-child(1), td:nth-child(1) { width: 23%; }
+    th:nth-child(2), td:nth-child(2) { width: 33%; }
+    td.mt { white-space: normal; }
+  }
 </style>
 </head>
 <body>
@@ -176,6 +191,7 @@ const STEPS = [
 function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
 
 function buildOption(){
+  const narrow = window.innerWidth < 640;
   const c1 = css('--series-1'), c2 = css('--series-2');
   const ink = css('--text-primary'), ink2 = css('--text-secondary'), muted = css('--text-muted');
   const surf = css('--surface-1');
@@ -186,12 +202,12 @@ function buildOption(){
 
   const mtSeries = (data, color, z) => ({
     type:'scatter', coordinateSystem:'geo', z:z,
-    symbolSize: 11,
+    symbolSize: narrow ? 9 : 11,
     itemStyle:{ color:color, borderColor:surf, borderWidth:2 },
     label:{
-      show:true, formatter:'{b}', color:ink, fontSize:12, fontWeight:600,
+      show:true, formatter:'{b}', color:ink, fontSize: narrow ? 11 : 12, fontWeight:600,
       backgroundColor:surf, borderColor:color, borderWidth:1, borderRadius:5,
-      padding:[3,6], distance:8
+      padding:[3,6], distance: narrow ? 6 : 8
     },
     emphasis:{ scale:1.4, label:{ color:ink } },
     tooltip:{
@@ -212,7 +228,7 @@ function buildOption(){
       extraCssText:'box-shadow:0 4px 16px rgba(0,0,0,.12);border-radius:8px;'
     },
     geo:{
-      map:'china', roam:true, zoom:1.55, center:[106.5,37.0],
+      map:'china', roam:true, zoom: narrow ? 1.2 : 1.55, center: narrow ? [104.5,36.5] : [106.5,37.0],
       itemStyle:{ areaColor: css('--map-area'), borderColor: css('--map-border'), borderWidth:0.8 },
       emphasis:{ disabled:true },
       regions: regions,
@@ -237,7 +253,7 @@ function buildOption(){
       mtSeries(MT_12, c1, 8),
       mtSeries(MT_23, c2, 8),
       { type:'scatter', coordinateSystem:'geo', symbolSize:0, silent:true, z:3,
-        label:{ show:true, color:muted, fontSize:13, fontWeight:600, opacity:0.85,
+        label:{ show:true, color:muted, fontSize: narrow ? 11 : 13, fontWeight:600, opacity:0.85,
                 formatter: p => p.data.name },
         data: STEPS.map(s => ({ name:s.name, value:s.coord })) }
     ]
@@ -246,7 +262,12 @@ function buildOption(){
 
 const chart = echarts.init(document.getElementById('map'));
 chart.setOption(buildOption());
-window.addEventListener('resize', () => chart.resize());
+let wasNarrow = window.innerWidth < 640;
+window.addEventListener('resize', () => {
+  chart.resize();
+  const isNarrow = window.innerWidth < 640;
+  if (isNarrow !== wasNarrow) { wasNarrow = isNarrow; chart.setOption(buildOption(), true); }
+});
 
 const btn = document.getElementById('themeBtn');
 btn.addEventListener('click', () => {
